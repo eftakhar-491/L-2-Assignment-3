@@ -50,13 +50,50 @@ export const createBorrow = async (req: Request, res: Response) => {
   }
 };
 
-export const getAllBorrows = async (req: Request, res: Response) => {
+export const getAllBorrows = async (_: Request, res: Response) => {
   try {
-    console.log(req?.query);
+    const data = await Borrow.aggregate([
+      {
+        $addFields: {
+          bookID: { $toObjectId: "$book" },
+        },
+      },
+      {
+        $group: {
+          _id: "$bookID",
+          totalQuantity: { $sum: "$quantity" },
+        },
+      },
+      {
+        $lookup: {
+          from: "books",
+          localField: "_id",
+          foreignField: "_id",
+          as: "bookDetails",
+        },
+      },
+      { $unwind: "$bookDetails" },
+      {
+        $project: {
+          book: {
+            title: "$bookDetails.title",
+            isbn: "$bookDetails.isbn",
+          },
+          _id: 0,
+          totalQuantity: 1,
+        },
+      },
+    ]);
+
+    res.status(200).json({
+      success: true,
+      message: "Borrowed books summary retrieved successfully",
+      data,
+    });
   } catch (error: any) {
     res.status(500).json({
       success: false,
-      message: error.message || "Failed to retrieve borrow records",
+      message: error?.message || "Server error",
       data: null,
     });
   }
