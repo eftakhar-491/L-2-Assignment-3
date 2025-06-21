@@ -7,4 +7,6 @@ export interface IBook {
   copies: number;
   available: boolean;
   updateAvailability: () => void;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

@@ -1,0 +1,16 @@
+import { z } from "zod/v4";
+export const ZBorrow = z.object({
+  book: z.string().min(1, "Book ID is required"),
+  quantity: z.number().min(1, "Quantity must be at least 1"),
+  dueDate: z
+    .string()
+    .transform((val) => {
+      const date = new Date(val);
+      if (isNaN(date.getTime())) throw new Error("Invalid date format");
+      return date;
+    })
+    .refine((date) => date > new Date(), {
+      message: "Due date must be in the future",
+    })
+    .transform((date) => date.toISOString()),
+});

@@ -11,7 +11,7 @@ const BookSchema = new Schema<IBook>(
     copies: {
       type: Number,
       required: true,
-      min: [1, "At least one copy is required"],
+      min: [0, "At least one copy is required"],
     },
     available: { type: Boolean, default: true },
   },
@@ -20,7 +20,8 @@ const BookSchema = new Schema<IBook>(
     versionKey: false,
   }
 );
-BookSchema.methods.updateAvailability = function () {
+BookSchema.methods.updateAvailability = function (quantity: number) {
+  this.copies -= quantity;
   if (this.copies <= 0) {
     this.available = false;
   }
