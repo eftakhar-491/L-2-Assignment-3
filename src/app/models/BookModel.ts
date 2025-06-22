@@ -31,7 +31,7 @@ export const BookSchema = new Schema<IBook>(
     isbn: {
       type: String,
       required: [true, "ISBN is required"],
-      unique: true, // MongoDB handles unique error separately (duplicate key error)
+      unique: true,
     },
     description: {
       type: String,

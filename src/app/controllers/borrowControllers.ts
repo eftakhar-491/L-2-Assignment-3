@@ -4,8 +4,6 @@ import { Book } from "../models/BookModel";
 import { ZBorrow } from "../Validetor/borrowValidetor";
 
 export const createBorrow = async (req: Request, res: Response) => {
-  // const  = req.body;
-
   try {
     const { book, quantity, dueDate } = await ZBorrow.parseAsync(req.body);
 
@@ -94,7 +92,7 @@ export const getAllBorrows = async (_: Request, res: Response) => {
       data,
     });
   } catch (error: any) {
-    res.status(500).json({
+    res.status(400).json({
       success: false,
       message: error?.message || "Server error",
       data: null,

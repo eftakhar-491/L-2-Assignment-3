@@ -77,4 +77,8 @@ GET /api/borrow   (Get aggregated summary of borrowed books)
 POST /api/borrow   (Return a book; increments available )
 ```
 
+<br>
+<br>
+<hr>
 Built with ❤️ for learning and productivity.
+<hr>

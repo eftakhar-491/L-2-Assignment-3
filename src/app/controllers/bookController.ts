@@ -58,10 +58,8 @@ export const getBook = async (req: Request, res: Response) => {
 
 export const getBookById = async (req: Request, res: Response) => {
   const { bookId } = req.params;
-  console.log(typeof bookId);
 
   try {
-    // Validate bookId as a valid ObjectId
     const data = await Book.findById(bookId);
 
     if (!data) {
