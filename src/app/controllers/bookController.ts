@@ -5,9 +5,9 @@ import { ZBook } from "../Validetor/bookValidetor";
 
 export const createBook = async (req: Request, res: Response) => {
   try {
-    const body = await ZBook.parseAsync(req.body);
-    const data = await Book.create(body);
-
+    // const data = await Book.create(body);
+    const insBook = new Book(req.body);
+    const data = await insBook.save();
     res.status(201).json({
       success: true,
       message: "Book created successfully",
@@ -15,9 +15,12 @@ export const createBook = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     res.status(400).json({
+      message: error?.message || "Server Error",
       success: false,
-      message: error?.message || "Failed to create book",
-      data: null,
+      error: {
+        name: error?.name || "Server Error",
+        error,
+      },
     });
   }
 };
@@ -43,9 +46,12 @@ export const getBook = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     res.status(400).json({
+      message: error?.message?.toString() || "Server Error",
       success: false,
-      message: error?.message || "Failed to retrieved books",
-      data: null,
+      error: {
+        name: error?.name || "Server Error",
+        error,
+      },
     });
   }
 };
@@ -57,6 +63,14 @@ export const getBookById = async (req: Request, res: Response) => {
   try {
     // Validate bookId as a valid ObjectId
     const data = await Book.findById(bookId);
+
+    if (!data) {
+      return res.status(404).json({
+        success: false,
+        message: "Book not found",
+        data: null,
+      });
+    }
     res.status(200).json({
       success: true,
       message: "Book retrieved successfully",
@@ -64,9 +78,12 @@ export const getBookById = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     res.status(400).json({
+      message: error?.message?.toString() || "Server Error",
       success: false,
-      message: error?.message || "Failed to retrieve book by ID",
-      data: null,
+      error: {
+        name: error?.name || "Server Error",
+        error,
+      },
     });
   }
 };
@@ -77,7 +94,17 @@ export const updateBook = async (req: Request, res: Response) => {
     const ZBookUpdate = ZBook.partial().strict();
 
     const body = await ZBookUpdate.parseAsync(req.body);
-    console.log(body);
+
+    const currentBook = await Book.findById(bookId);
+
+    body.copies = (currentBook?.copies ?? 0) + (body?.copies ?? 0);
+
+    if (body.copies > 0) {
+      body.available = true;
+    } else {
+      body.available = false;
+    }
+
     const data = await Book.findByIdAndUpdate(bookId, body, {
       new: true,
       runValidators: true,
@@ -98,9 +125,12 @@ export const updateBook = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     res.status(400).json({
+      message: error?.message?.toString() || "Server Error",
       success: false,
-      message: error?.message || "Failed to update book",
-      data: null,
+      error: {
+        name: error?.name || "Server Error",
+        error,
+      },
     });
   }
 };
@@ -123,9 +153,12 @@ export const deleteBook = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     res.status(400).json({
+      message: error?.message?.toString() || "Server Error",
       success: false,
-      message: error?.message || "Failed to delete book",
-      data: null,
+      error: {
+        name: error?.name || "Server Error",
+        error,
+      },
     });
   }
 };

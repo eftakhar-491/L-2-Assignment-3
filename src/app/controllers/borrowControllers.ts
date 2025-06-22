@@ -4,13 +4,13 @@ import { Book } from "../models/BookModel";
 import { ZBorrow } from "../Validetor/borrowValidetor";
 
 export const createBorrow = async (req: Request, res: Response) => {
-  const { book, quantity, dueDate } = req.body;
+  // const  = req.body;
 
   try {
-    const parseData = ZBorrow.parseAsync(req.body);
-    console.log(await parseData);
+    const { book, quantity, dueDate } = await ZBorrow.parseAsync(req.body);
 
     const bookData = await Book.findById(book);
+
     if (!bookData) {
       return res.status(404).json({
         success: false,
@@ -43,9 +43,12 @@ export const createBorrow = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     res.status(400).json({
+      message: error?.message?.toString() || "Server Error",
       success: false,
-      message: error.message || "Failed to post borrow record",
-      data: error,
+      error: {
+        name: error?.name || "Server Error",
+        error,
+      },
     });
   }
 };

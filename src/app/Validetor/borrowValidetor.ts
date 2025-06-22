@@ -1,6 +1,13 @@
+import mongoose from "mongoose";
 import { z } from "zod/v4";
 export const ZBorrow = z.object({
-  book: z.string().min(1, "Book ID is required"),
+  book: z
+    .string({
+      message: "Book ID is required",
+    })
+    .refine((val) => mongoose.Types.ObjectId.isValid(val), {
+      message: "Invalid Book ID",
+    }),
   quantity: z.number().min(1, "Quantity must be at least 1"),
   dueDate: z
     .string()
