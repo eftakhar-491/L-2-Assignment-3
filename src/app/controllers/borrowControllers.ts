@@ -26,7 +26,10 @@ export const createBorrow = async (req: Request, res: Response) => {
     }
 
     (bookData as any).updateAvailability(quantity);
-    await bookData.save();
+    await Book.findByIdAndUpdate(book, bookData, {
+      new: true,
+      runValidators: true,
+    });
 
     const borrowRecord = await Borrow.create({
       book,
@@ -41,7 +44,8 @@ export const createBorrow = async (req: Request, res: Response) => {
     });
   } catch (error: any) {
     res.status(400).json({
-      message: error?.message?.toString() || "Server Error",
+      message: error?.message || "Server Error",
+
       success: false,
       error: {
         name: error?.name || "Server Error",

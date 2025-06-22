@@ -8,7 +8,7 @@ export const ZBorrow = z.object({
     .refine((val) => mongoose.Types.ObjectId.isValid(val), {
       message: "Invalid Book ID",
     }),
-  quantity: z.number().min(1, "Quantity must be at least 1"),
+  quantity: z.number().min(1, "Quantity must be at least 1 eftaaaaaaaaaaa"),
   dueDate: z
     .string()
     .transform((val) => {
